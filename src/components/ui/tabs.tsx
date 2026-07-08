@@ -22,7 +22,7 @@ export function Tabs({
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1 rounded-xl border border-border bg-surface-2 p-1",
+        "flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-border bg-surface-2 p-1 no-scrollbar",
         className,
       )}
       role="tablist"
@@ -36,7 +36,7 @@ export function Tabs({
             aria-selected={active}
             onClick={() => onChange(t.value)}
             className={cn(
-              "relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all",
+              "relative inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all",
               active
                 ? "bg-surface text-foreground shadow-soft"
                 : "text-muted-foreground hover:text-foreground",
@@ -73,7 +73,13 @@ export function SegmentedTabs({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-center gap-6 border-b border-border", className)} role="tablist">
+    <div
+      className={cn(
+        "flex items-center gap-6 overflow-x-auto border-b border-border no-scrollbar",
+        className,
+      )}
+      role="tablist"
+    >
       {tabs.map((t) => {
         const active = t.value === value;
         return (
@@ -83,7 +89,7 @@ export function SegmentedTabs({
             aria-selected={active}
             onClick={() => onChange(t.value)}
             className={cn(
-              "relative -mb-px flex items-center gap-2 border-b-2 pb-3 pt-1 text-sm font-semibold transition-colors",
+              "relative -mb-px flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 pb-3 pt-1 text-sm font-semibold transition-colors",
               active
                 ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground",

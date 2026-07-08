@@ -27,6 +27,17 @@ function useMode() {
   return theme === "dark" ? "dark" : "light";
 }
 
+/**
+ * Safe categorical color access. The palette has a fixed number of hues, so any
+ * index (series or item position) is wrapped with modulo — a 9th+ series reuses
+ * an earlier hue instead of crashing on an out-of-range lookup.
+ */
+function pick(index: number, mode: "light" | "dark") {
+  const len = chartCategorical.length;
+  const slot = chartCategorical[((index % len) + len) % len];
+  return slot[mode];
+}
+
 const axisTick = { fontSize: 12, fill: "hsl(var(--muted-foreground))" };
 
 /** Shared tooltip that matches the app surfaces. */
@@ -134,7 +145,7 @@ export function AreaTrend({
       <AreaChart data={data} margin={{ top: 6, right: 8, left: 0, bottom: 0 }}>
         <defs>
           {series.map((s, i) => {
-            const color = chartCategorical[s.colorIndex ?? i][mode];
+            const color = pick(s.colorIndex ?? i, mode);
             return (
               <linearGradient key={s.key} id={`grad-${s.key}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={color} stopOpacity={0.32} />
@@ -151,7 +162,7 @@ export function AreaTrend({
           cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1 }}
         />
         {series.map((s, i) => {
-          const color = chartCategorical[s.colorIndex ?? i][mode];
+          const color = pick(s.colorIndex ?? i, mode);
           return (
             <Area
               key={s.key}
@@ -221,7 +232,7 @@ export function BarSeries({
             dataKey={s.key}
             name={s.name}
             stackId={stacked ? "a" : undefined}
-            fill={chartCategorical[s.colorIndex ?? i][mode]}
+            fill={pick(s.colorIndex ?? i, mode)}
             radius={stacked ? [0, 0, 0, 0] : horizontal ? [0, 6, 6, 0] : [6, 6, 0, 0]}
             maxBarSize={horizontal ? 22 : 46}
           />
@@ -259,7 +270,7 @@ export function LineSeries({
             type="monotone"
             dataKey={s.key}
             name={s.name}
-            stroke={chartCategorical[s.colorIndex ?? i][mode]}
+            stroke={pick(s.colorIndex ?? i, mode)}
             strokeWidth={2.4}
             dot={false}
             activeDot={{ r: 4 }}
@@ -300,7 +311,7 @@ export function DonutChart({
             strokeWidth={3}
           >
             {data.map((d, i) => (
-              <Cell key={i} fill={chartCategorical[d.colorIndex ?? i][mode]} />
+              <Cell key={i} fill={pick(d.colorIndex ?? i, mode)} />
             ))}
           </Pie>
           <Tooltip content={<ChartTooltip formatter={valueFormatter} />} />
@@ -333,7 +344,7 @@ export function Sparkline({
   height?: number;
 }) {
   const mode = useMode();
-  const color = chartCategorical[colorIndex][mode];
+  const color = pick(colorIndex, mode);
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
@@ -369,7 +380,7 @@ export function BarList({
   return (
     <div className="space-y-3">
       {items.map((item, i) => {
-        const color = chartCategorical[item.colorIndex ?? i][mode];
+        const color = pick(item.colorIndex ?? i, mode);
         return (
           <div key={item.label}>
             <div className="mb-1 flex items-center justify-between text-sm">
