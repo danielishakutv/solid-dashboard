@@ -1,0 +1,376 @@
+"use client";
+
+import type { ReactNode } from "react";
+import {
+  BarChart3,
+  Download,
+  FileText,
+  Users,
+  FileSignature,
+  ShoppingCart,
+  UserCheck,
+  ClipboardCheck,
+  Boxes,
+  CalendarClock,
+  Eye,
+} from "lucide-react";
+import { PageHeader } from "@/components/ui/page-header";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { IconBadge } from "@/components/ui/misc";
+import { DataTable, type Column } from "@/components/ui/data-table";
+import { AreaTrend } from "@/components/charts";
+import { overviewKpis, performanceTrend, monthLabel } from "@/data/overview";
+
+interface GeneratedReport {
+  id: string;
+  name: string;
+  type: string;
+  period: string;
+  generatedBy: string;
+  date: string;
+  format: "PDF" | "XLSX";
+}
+
+const generatedReports: GeneratedReport[] = [
+  {
+    id: "gr-1",
+    name: "Monthly Administrative Performance Report",
+    type: "Performance",
+    period: "July 2026",
+    generatedBy: "Lepwa Blessing Zadok",
+    date: "2026-07-06",
+    format: "PDF",
+  },
+  {
+    id: "gr-2",
+    name: "Staff Attendance Summary",
+    type: "HR",
+    period: "July 2026",
+    generatedBy: "Dr. Amina Bello",
+    date: "2026-07-05",
+    format: "XLSX",
+  },
+  {
+    id: "gr-3",
+    name: "Contract & Payment Status",
+    type: "Finance",
+    period: "Q2 2026",
+    generatedBy: "Ibrahim Musa",
+    date: "2026-07-02",
+    format: "PDF",
+  },
+  {
+    id: "gr-4",
+    name: "Procurement Progress",
+    type: "Procurement",
+    period: "Q2 2026",
+    generatedBy: "Lepwa Blessing Zadok",
+    date: "2026-06-29",
+    format: "PDF",
+  },
+  {
+    id: "gr-5",
+    name: "Visitor Statistics",
+    type: "Facilities",
+    period: "June 2026",
+    generatedBy: "Dr. Amina Bello",
+    date: "2026-06-27",
+    format: "XLSX",
+  },
+  {
+    id: "gr-6",
+    name: "Meeting Action Status",
+    type: "Governance",
+    period: "June 2026",
+    generatedBy: "Ibrahim Musa",
+    date: "2026-06-24",
+    format: "PDF",
+  },
+];
+
+const typeTone: Record<string, BadgeTone> = {
+  Performance: "primary",
+  HR: "success",
+  Finance: "warning",
+  Procurement: "info",
+  Facilities: "accent",
+  Governance: "danger",
+};
+
+interface ReportDef {
+  id: string;
+  title: string;
+  description: string;
+  period: string;
+  icon: ReactNode;
+  tone: "primary" | "success" | "warning" | "danger" | "info" | "accent";
+}
+
+const reportLibrary: ReportDef[] = [
+  {
+    id: "rl-1",
+    title: "Monthly Administrative Performance",
+    description: "Composite scorecard across attendance, registry, contracts and procurement.",
+    period: "July 2026",
+    icon: <BarChart3 className="h-5 w-5" />,
+    tone: "primary",
+  },
+  {
+    id: "rl-2",
+    title: "Staff Attendance Summary",
+    description: "Daily check-ins, punctuality trends and leave utilisation by department.",
+    period: "July 2026",
+    icon: <UserCheck className="h-5 w-5" />,
+    tone: "success",
+  },
+  {
+    id: "rl-3",
+    title: "Contract & Payment Status",
+    description: "Active contracts, milestone payments and APG expiry watchlist.",
+    period: "Q2 2026",
+    icon: <FileSignature className="h-5 w-5" />,
+    tone: "warning",
+  },
+  {
+    id: "rl-4",
+    title: "Procurement Progress",
+    description: "Pipeline stage tracking, bid closings and no-objection status.",
+    period: "Q2 2026",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    tone: "info",
+  },
+  {
+    id: "rl-5",
+    title: "Visitor Statistics",
+    description: "Visitor volumes, average duration and top purposes of visit.",
+    period: "July 2026",
+    icon: <Users className="h-5 w-5" />,
+    tone: "accent",
+  },
+  {
+    id: "rl-6",
+    title: "Meeting Action Status",
+    description: "Action point completion rates and overdue items by responsible officer.",
+    period: "July 2026",
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    tone: "danger",
+  },
+  {
+    id: "rl-7",
+    title: "Asset & Inventory Register",
+    description: "Asset condition, utilisation and open maintenance requests.",
+    period: "Q2 2026",
+    icon: <Boxes className="h-5 w-5" />,
+    tone: "primary",
+  },
+  {
+    id: "rl-8",
+    title: "Leave & Continuity",
+    description: "Leave forecast, reliever coverage and balances across staff.",
+    period: "July 2026",
+    icon: <CalendarClock className="h-5 w-5" />,
+    tone: "success",
+  },
+];
+
+const generatedColumns: Column<GeneratedReport>[] = [
+  {
+    key: "name",
+    header: "Name",
+    render: (row) => (
+      <span className="block max-w-[260px] truncate font-medium text-foreground" title={row.name}>
+        {row.name}
+      </span>
+    ),
+  },
+  {
+    key: "type",
+    header: "Type",
+    render: (row) => <Badge tone={typeTone[row.type] ?? "neutral"}>{row.type}</Badge>,
+  },
+  { key: "period", header: "Period" },
+  { key: "generatedBy", header: "Generated by", hideOnMobile: true },
+  { key: "date", header: "Date", sortable: true },
+  {
+    key: "format",
+    header: "Format",
+    render: (row) => <Badge tone={row.format === "PDF" ? "danger" : "success"}>{row.format}</Badge>,
+  },
+  {
+    key: "download",
+    header: "",
+    align: "right",
+    render: () => (
+      <Button variant="ghost" size="sm">
+        <Download className="h-4 w-4" />
+        Download
+      </Button>
+    ),
+  },
+];
+
+export default function ReportsPage() {
+  const k = overviewKpis();
+
+  return (
+    <div className="space-y-7">
+      <PageHeader
+        title="Reports"
+        description="Generate, browse and download administrative reports — including the monthly performance report for the Adamawa State PCU."
+        icon={<BarChart3 className="h-6 w-6" />}
+        actions={
+          <Button size="md">
+            <Download className="h-4 w-4" />
+            Generate report
+          </Button>
+        }
+      />
+
+      {/* Featured report */}
+      <Card className="overflow-hidden">
+        <div className="brand-gradient px-5 py-5 text-white sm:px-6 sm:py-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-white/70">Featured report</p>
+              <h2 className="font-display text-xl font-extrabold tracking-tight sm:text-2xl">
+                Monthly Administrative Performance Report — {monthLabel}
+              </h2>
+              <p className="mt-1 max-w-2xl text-sm text-white/80">
+                A consolidated view of attendance, contract disbursement, compliance and file circulation across
+                the Project Coordination Unit for the reporting month.
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
+              <Button variant="secondary" size="md">
+                <Download className="h-4 w-4" />
+                Download PDF
+              </Button>
+              <Button
+                variant="outline"
+                size="md"
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20"
+              >
+                <Eye className="h-4 w-4" />
+                View full report
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <CardContent className="space-y-6">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <MiniStatTile label="Attendance rate" value={`${k.attendance.attendanceRate}%`} tone="success" />
+            <MiniStatTile label="Active contracts" value={k.contracts.active} tone="primary" />
+            <MiniStatTile label="Action completion" value={`${k.meetings.completionRate}%`} tone="accent" />
+            <MiniStatTile label="Files in circulation" value={k.registry.inCirculation} tone="info" />
+          </div>
+
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-sm font-semibold text-foreground">Performance trend</p>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                {[
+                  { label: "Attendance", c: "#0d9488" },
+                  { label: "Disbursement", c: "#2a78d6" },
+                  { label: "Compliance", c: "#7c3aed" },
+                ].map((l) => (
+                  <span key={l.label} className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: l.c }} />
+                    {l.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <AreaTrend
+              data={performanceTrend}
+              xKey="month"
+              height={260}
+              valueFormatter={(v) => `${v}%`}
+              series={[
+                { key: "attendance", name: "Attendance", colorIndex: 0 },
+                { key: "disbursement", name: "Disbursement", colorIndex: 1 },
+                { key: "compliance", name: "Compliance", colorIndex: 3 },
+              ]}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Report library */}
+      <div className="space-y-4">
+        <h2 className="font-display text-lg font-bold text-foreground">Report library</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {reportLibrary.map((r) => (
+            <Card key={r.id} hover className="flex flex-col">
+              <CardContent className="flex flex-1 flex-col gap-4">
+                <div className="flex items-start justify-between gap-3">
+                  <IconBadge tone={r.tone}>{r.icon}</IconBadge>
+                  <Badge tone="neutral">{r.period}</Badge>
+                </div>
+                <div className="flex-1">
+                  <p className="font-display text-base font-bold text-foreground">{r.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{r.description}</p>
+                </div>
+                <div className="flex items-center gap-2 pt-1">
+                  <Button variant="ghost" size="sm" className="flex-1">
+                    <Eye className="h-4 w-4" />
+                    Preview
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex-1">
+                    <Download className="h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Recently generated */}
+      <Card>
+        <CardHeader
+          title="Recently generated"
+          description="Reports generated by PCU staff in recent weeks"
+          icon={<FileText className="h-5 w-5" />}
+        />
+        <CardContent>
+          <DataTable
+            columns={generatedColumns}
+            data={generatedReports}
+            searchKeys={["name", "type", "generatedBy", "period"]}
+            searchPlaceholder="Search generated reports…"
+            pageSize={6}
+          />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function MiniStatTile({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: ReactNode;
+  tone: "primary" | "success" | "warning" | "danger" | "info" | "accent";
+}) {
+  const toneText: Record<string, string> = {
+    primary: "text-primary",
+    success: "text-success",
+    warning: "text-warning",
+    danger: "text-danger",
+    info: "text-info",
+    accent: "text-accent",
+  };
+  return (
+    <div className="rounded-xl border border-border bg-surface-2 p-3.5">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+      <p className={`mt-1 font-display text-xl font-extrabold tabular ${toneText[tone]}`}>{value}</p>
+    </div>
+  );
+}
