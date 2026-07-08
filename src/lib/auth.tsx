@@ -13,18 +13,11 @@ export interface DemoUser {
   roleLabel: string;
   title: string;
   avatar?: string;
+  /** Whether this demo account can currently be used to sign in. */
+  enabled: boolean;
 }
 
 export const DEMO_USERS: DemoUser[] = [
-  {
-    id: "u-coord",
-    name: "Dr. Amina Bello",
-    email: "coordinator@solid.ad.gov.ng",
-    password: "solid2025",
-    role: "coordinator",
-    roleLabel: "Project Coordinator",
-    title: "Project Coordinator, Adamawa PCU",
-  },
   {
     id: "u-admin",
     name: "Lepwa Blessing Zadok",
@@ -33,6 +26,17 @@ export const DEMO_USERS: DemoUser[] = [
     role: "admin",
     roleLabel: "Admin Officer",
     title: "Administrative Officer",
+    enabled: true,
+  },
+  {
+    id: "u-coord",
+    name: "Dr. Amina Bello",
+    email: "coordinator@solid.ad.gov.ng",
+    password: "solid2025",
+    role: "coordinator",
+    roleLabel: "Project Coordinator",
+    title: "Project Coordinator, Adamawa PCU",
+    enabled: false,
   },
   {
     id: "u-mgmt",
@@ -42,10 +46,11 @@ export const DEMO_USERS: DemoUser[] = [
     role: "management",
     roleLabel: "Management",
     title: "Management (Read-only)",
+    enabled: false,
   },
 ];
 
-export type SessionUser = Omit<DemoUser, "password">;
+export type SessionUser = Omit<DemoUser, "password" | "enabled">;
 
 interface AuthContextValue {
   user: SessionUser | null;
@@ -93,7 +98,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!match) {
         return { ok: false, error: "Invalid email or password. Try the demo credentials below." };
       }
-      const { password: _pw, ...session } = match;
+      if (!match.enabled) {
+        return {
+          ok: false,
+          error: "This demo account isn't available yet. Please sign in with the Admin Officer demo login.",
+        };
+      }
+      const { password: _pw, enabled: _en, ...session } = match;
       persist(session);
       return { ok: true };
     },
@@ -102,8 +113,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginAs = useCallback(
     (role: Role) => {
-      const match = DEMO_USERS.find((u) => u.role === role) ?? DEMO_USERS[0];
-      const { password: _pw, ...session } = match;
+      const match = DEMO_USERS.find((u) => u.role === role);
+      if (!match || !match.enabled) return;
+      const { password: _pw, enabled: _en, ...session } = match;
       persist(session);
     },
     [persist],

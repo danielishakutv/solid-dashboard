@@ -92,7 +92,7 @@ export function DataTable<T extends { id: string | number }>({
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full min-w-0 flex-col">
       {(searchable || toolbar) && (
         <div className="flex flex-col gap-3 px-1 pb-4 sm:flex-row sm:items-center sm:justify-between">
           {searchable ? (

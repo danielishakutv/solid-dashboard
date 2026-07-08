@@ -74,6 +74,15 @@
     scroll-behavior: smooth;
   }
 
+  /* A grid that only declares its column count at a breakpoint (e.g.
+     `grid lg:grid-cols-3`) collapses to a single IMPLICIT auto column on mobile,
+     which sizes to its content's max width and can push the page wider than the
+     screen. Force that bare single column to a bounded 1fr track so content wraps
+     instead of overflowing. Any explicit `grid-cols-*` utility overrides this. */
+  .grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";

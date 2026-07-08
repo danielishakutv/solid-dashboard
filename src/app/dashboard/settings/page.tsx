@@ -214,12 +214,12 @@ export default function SettingsPage() {
               </Button>
             </div>
           </CardContent>
-          <CardFooter className="justify-between">
+          <CardFooter className="flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-foreground">Sign out everywhere</p>
               <p className="text-xs text-muted-foreground">End all active sessions on other devices.</p>
             </div>
-            <Button variant="danger" size="md">
+            <Button variant="danger" size="md" className="w-full shrink-0 sm:w-auto">
               <LogOut className="h-4 w-4" />
               Sign out of all devices
             </Button>

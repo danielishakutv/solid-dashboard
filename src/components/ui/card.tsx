@@ -37,13 +37,13 @@ export function CardHeader({
         className={cn("flex items-start justify-between gap-4 px-5 pt-5", className)}
         {...props}
       >
-        <div className="flex items-start gap-3">
+        <div className="flex min-w-0 items-start gap-3">
           {icon && (
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
               {icon}
             </span>
           )}
-          <div className="space-y-0.5">
+          <div className="min-w-0 space-y-0.5">
             {title && <h3 className="font-display text-base font-bold text-foreground">{title}</h3>}
             {description && <p className="text-sm text-muted-foreground">{description}</p>}
           </div>

@@ -110,7 +110,7 @@ export default function LandingPage() {
               <p className="mt-4 text-sm text-muted-foreground">
                 No setup required · Demo login:{" "}
                 <code className="rounded bg-surface-2 px-1.5 py-0.5 text-xs font-semibold text-foreground">
-                  coordinator@solid.ad.gov.ng
+                  admin@solid.ad.gov.ng
                 </code>
               </p>
             </div>

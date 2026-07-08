@@ -21,10 +21,15 @@ import { useAuth, DEMO_USERS, type Role } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const roleButtons: { role: Role; label: string; icon: typeof Clock }[] = [
-  { role: "coordinator", label: "Coordinator", icon: ShieldCheck },
   { role: "admin", label: "Admin Officer", icon: Users },
+  { role: "coordinator", label: "Coordinator", icon: ShieldCheck },
   { role: "management", label: "Management", icon: FileSignature },
 ];
+
+const roleEnabled = (role: Role) => DEMO_USERS.find((u) => u.role === role)?.enabled ?? false;
+
+/** The single demo account available for now. */
+const activeDemo = DEMO_USERS.find((u) => u.enabled) ?? DEMO_USERS[0];
 
 const highlights = [
   { icon: Clock, title: "Real-time attendance", text: "Live staff availability & check-in monitoring" },
@@ -61,8 +66,8 @@ export default function LoginPage() {
   };
 
   const fillDemo = () => {
-    setEmail(DEMO_USERS[0].email);
-    setPassword(DEMO_USERS[0].password);
+    setEmail(activeDemo.email);
+    setPassword(activeDemo.password);
   };
 
   return (
@@ -201,32 +206,48 @@ export default function LoginPage() {
               </button>
             </div>
             <div className="mt-2 space-y-1 text-sm">
-              <p className="flex items-center justify-between">
+              <p className="flex items-center justify-between gap-2">
                 <span className="text-muted-foreground">Email</span>
-                <code className="rounded bg-surface px-1.5 py-0.5 text-xs font-semibold text-foreground">
-                  coordinator@solid.ad.gov.ng
+                <code className="truncate rounded bg-surface px-1.5 py-0.5 text-xs font-semibold text-foreground">
+                  {activeDemo.email}
                 </code>
               </p>
-              <p className="flex items-center justify-between">
+              <p className="flex items-center justify-between gap-2">
                 <span className="text-muted-foreground">Password</span>
                 <code className="rounded bg-surface px-1.5 py-0.5 text-xs font-semibold text-foreground">
-                  solid2025
+                  {activeDemo.password}
                 </code>
               </p>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-2">
-              {roleButtons.map((r) => (
-                <button
-                  key={r.role}
-                  onClick={() => quickLogin(r.role)}
-                  className={cn(
-                    "flex flex-col items-center gap-1 rounded-xl border border-border bg-surface px-2 py-2.5 text-center transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-soft",
-                  )}
-                >
-                  <r.icon className="h-4 w-4 text-primary" />
-                  <span className="text-[11px] font-bold text-foreground">{r.label}</span>
-                </button>
-              ))}
+              {roleButtons.map((r) => {
+                const enabled = roleEnabled(r.role);
+                return (
+                  <button
+                    key={r.role}
+                    onClick={() => enabled && quickLogin(r.role)}
+                    disabled={!enabled}
+                    aria-disabled={!enabled}
+                    title={enabled ? `Sign in as ${r.label}` : "Coming soon"}
+                    className={cn(
+                      "relative flex flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-center transition-all",
+                      enabled
+                        ? "border-border bg-surface hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-soft"
+                        : "cursor-not-allowed border-dashed border-border bg-surface-2/50 opacity-60",
+                    )}
+                  >
+                    <r.icon className={cn("h-4 w-4", enabled ? "text-primary" : "text-muted-foreground")} />
+                    <span className={cn("text-[11px] font-bold", enabled ? "text-foreground" : "text-muted-foreground")}>
+                      {r.label}
+                    </span>
+                    {!enabled && (
+                      <span className="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        Soon
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

@@ -23,12 +23,12 @@ Then open **http://localhost:3000** (or the port shown in the terminal).
 
 | Field | Value |
 |------|-------|
-| Email | `coordinator@solid.ad.gov.ng` |
+| Email | `admin@solid.ad.gov.ng` |
 | Password | `solid2025` |
 
-The login screen also has **one-click role buttons** (Coordinator / Admin Officer / Management)
-and an **Autofill** shortcut. Other demo accounts: `admin@solid.ad.gov.ng`,
-`management@solid.ad.gov.ng` — all use the password `solid2025`.
+The login screen has an **Autofill** shortcut and a one-click **Admin Officer** button.
+For now only the **Admin Officer** demo account is active; the Coordinator and Management
+accounts are shown but disabled ("Soon").
 
 ---
 

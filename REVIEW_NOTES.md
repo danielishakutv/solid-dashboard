@@ -14,8 +14,9 @@ npm run dev
 
 Open the URL shown (default **http://localhost:3000**). Sign in with:
 
-- **Email:** `coordinator@solid.ad.gov.ng`  · **Password:** `solid2025`
-- or click a **role button** on the login screen (Coordinator / Admin / Management), or **Autofill**.
+- **Email:** `admin@solid.ad.gov.ng`  · **Password:** `solid2025`
+- or click the **Admin Officer** button on the login screen, or **Autofill**. (For now only the Admin
+  Officer account is active; Coordinator and Management are disabled — "Soon".)
 
 To create a production build later: `npm run build` then `npm run start`.
 
